@@ -18,15 +18,15 @@ module.exports = {
         phoneNumber: "required|integer|minLength:10|maxLength:15",
         password: "required|minLength:6|maxLength:6",
         ConfirmPassword: "required|minLength:6|maxLength:6",
-      }); 
+      });
       if (req.body.password !== req.body.ConfirmPassword) {
         return helper.failed(res, "Confirm password not match");
       }
-        let errorsResponse = await helper.checkValidation(v);
+      let errorsResponse = await helper.checkValidation(v);
 
-        if (errorsResponse) {
-          return helper.failed(res, errorsResponse);
-        }
+      if (errorsResponse) {
+        return helper.failed(res, errorsResponse);
+      }
 
       const otp = Math.floor(1000 + Math.random() * 9000);
       const ownerEmail = req.body.yourEmail;
@@ -38,31 +38,29 @@ module.exports = {
       const find_data = await User.findOne({
         where: {
           yourEmail: req.body.yourEmail,
-          Role:1
         },
       });
       if (find_data) {
-        console.log("user already exist");
-        return;
+        return res.status(400).send({ message: "user already exist." })
       }
       // Create a new user
-      const newUser = User.create({
+      const newUser = await User.create({
         Name: req.body.Name,
         yourEmail: req.body.yourEmail,
         phoneNumber: req.body.phoneNumber,
         password: req.body.password,
-        Role: req.body.Role,
+        role: req.body.role,
         OTP: otp
       });
 
       await Emailsend.sendOTP(ownerEmail, `Your OTP: ${otp}`);
 
-      // Generate a JWT token
       const secretKey = "your-secret-key";
       const userId = newUser._id;
       const token = jwt.sign({ userId }, secretKey, { expiresIn: "1h" });
-
-      return res.status(200).json({ data:newUser,token:token,message:"usercreate succesfully" });
+      
+      await newUser.save()
+      return res.status(200).send({ data: newUser.dataValues, token: token, message: "usercreate succesfully" })
     } catch (error) {
       console.error("Error:", error);
       res.status(500).send("Internal server error");
@@ -71,18 +69,14 @@ module.exports = {
 
   verifyotp: async (req, res) => {
     try {
-
-      const finddata = await User.findOne({
-        where: {
-          yourEmail: req.body.yourEmail,
-        },
-      });
-
+      const userId = req.body.id;
+      const finddata = await User.findOne({ where: { id: userId }, raw: true });
+      console.log('data ==========>', finddata);
       if (!finddata) {
         return helper.failed(res, "User not found");
       }
 
-      if (req.body.otp != finddata.otp) {
+      if (parseInt(req.body.OTP) != finddata.OTP) {
         return helper.failed(res, "Invalid OTP!");
       }
 
@@ -92,21 +86,19 @@ module.exports = {
           OTP: 0,
         },
         {
-          where: {
-            yourEmail: req.body.yourEmail,
-          },
+          where: { id: userId },
         }
       );
 
       if (verify_otp) {
-        return helper.success(res, "OTP matched successfully");
+        return helper.success(res, "OTP matched successfully", finddata);
       } else {
         return helper.failed(res, "Error updating OTP");
       }
-      // res.json({finddata})
     } catch (error) {
       console.error("Failed to verify OTP:", error);
       res.status(500).json({ error: "Internal server error" });
     }
   }
+
 };

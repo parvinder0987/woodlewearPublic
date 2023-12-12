@@ -1,102 +1,83 @@
-  const { DataTypes } = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require("../db/dbConfig");
 
-const User = sequelize.define("User", {
+const user = sequelize.define("user", {
   Name: {
     type: DataTypes.STRING,
     allowNull: true,
   },
   yourEmail: {
     type: DataTypes.STRING,
-    allowNull: false, 
-    unique: false,    
-    defaultValue: "", 
+    allowNull: false,
+    unique: false,
+
   },
   phoneNumber: {
     type: DataTypes.STRING,
-    defaultValue: null,
+
   },
   password: {
     type: DataTypes.STRING,
     allowNull: true,
-    defaultValue: null,
+
   },
-  
+
   role: {
     type: DataTypes.TINYINT,
     allowNull: true,
-    defaultValue: 1,
   },
-  
-   OTP: {
+
+  OTP: {
     type: DataTypes.STRING,
   },
   is_otp_verify: {
     type: DataTypes.INTEGER,
-    defaultValue:0,
   }, Gender: {
     type: DataTypes.STRING,
     enum: ["Male", "Female"],
-    defaultValue: null, 
+
   },
   DOB: {
     type: DataTypes.DATEONLY,
-    defaultValue: null,
     allowNull: true,
   },
   about: {
     type: DataTypes.TEXT,
-    defaultValue:null
-  },image	:{
-    type:DataTypes.STRING,
-    defaultValue:null
+  }, image: {
+    type: DataTypes.STRING,
   },
-  education:{
-    type:DataTypes.STRING,
-    defaultValue:null
+  education: {
+    type: DataTypes.STRING,
   },
-  stream:{
-    type:DataTypes.STRING,
-    defaultValue:null
+  stream: {
+    type: DataTypes.STRING,
   },
-  partime:{
-    type:DataTypes.NUMBER,
-    enum :[1],
-    defaultValue:null
+  employeType: {
+    type: DataTypes.INTEGER,
+    enum: [1, 2], // 1 = full time , 2 = part time
+    defaultValue: 1
   },
-  fulltime:{
-    type:DataTypes.NUMBER,
-    enum: [0],
-    defaultValue:null
+  document: {
+    type: DataTypes.STRING,
   },
-  document:{
-    type:DataTypes.STRING,
-    defaultValue:null
+  experience: {
+    type: DataTypes.STRING,
   },
-  experience:{
-    type:DataTypes.STRING,
-    defaultValue:null
+  description: {
+    type: DataTypes.STRING,
   },
-  description:{
-   type:DataTypes.STRING,
-   defaultValue:null
+  skills: {
+    type: DataTypes.STRING,
   },
-  skills:{
-    type:DataTypes.STRING,
-    defaultValue:null
+  address: {
+    type: DataTypes.STRING,
   },
-  address:{
-    type:DataTypes.STRING,
-    defaultValue:null
-  },
-  idproof:{
-    type:DataTypes.STRING,
+  idproof: {
+    type: DataTypes.STRING,
     enum: [0, 1, 2, 3],
-    defaultValue:null
   },
-  uploadproof:{
-    type:DataTypes.STRING,
-    defaultValue:null
+  uploadproof: {
+    type: DataTypes.STRING,
   },
   // usertype:{
   //   type:DataTypes.TINYINT,
@@ -118,6 +99,6 @@ const User = sequelize.define("User", {
 
 });
 
-User.sync(); 
+user.sync();
 
-module.exports = User;
+module.exports = user;

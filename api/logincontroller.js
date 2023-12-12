@@ -29,7 +29,7 @@ module.exports = {
         return res.status(401).json({ error: 'Invalid email or password.' });
       }
 
-      const isPasswordValid = await bcrypt.compare(password, isUserExist.Password);
+      const isPasswordValid = await bcrypt.compareSync(password, isUserExist.password);
 
       if (!isPasswordValid) {
         return res.status(401).json({ error: 'Invalid email or password.' });
@@ -67,7 +67,7 @@ module.exports = {
       const ownerEmail = req.body.yourEmail;
   
         const user = await User.findOne({
-          where: { yourEmail },
+          where: { yourEmail },         
         });
   
         if (!user) {

@@ -1,4 +1,4 @@
-const mv = require('mv'); 
+const mv = require('mv');
 
 module.exports = {
   userId: () => {
@@ -42,9 +42,9 @@ module.exports = {
       code: 200,
       message: message,
       body: body,
-    });node
+    }); node
   },
-   fileUpload:async (files, folder = "users") =>{
+  fileUpload: async (files, folder = "users") => {
     const file_name_string = files.name;
     const file_name_array = file_name_string.split(".");
     const file_ext = file_name_array[file_name_array.length - 1];

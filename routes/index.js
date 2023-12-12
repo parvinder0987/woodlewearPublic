@@ -12,34 +12,35 @@ const getprofile = require('../api/getprofile');
 var router = express.Router();
 
 
-router.post("/signup",signupcontroller.create)
-router.post("/verifyotp",signupcontroller.verifyotp);
+router.post("/signup", signupcontroller.create)
+router.post("/verifyotp", signupcontroller.verifyotp);
 
-router.post('/login',logincontroller.login1)
+router.post('/login', logincontroller.login1)
 
 //..............category.................//
 
-router.post('/categoryadd',categorycontroller.addCategory)
-router.post('/subcategoryadd',categorycontroller.addSubcategory)
+router.post('/categoryadd', categorycontroller.addCategory)
+router.post('/subcategoryadd', categorycontroller.addSubcategory)
 
 //..........details..................//
 // router.post("/BasicDetails",basicdetailscontroller.details)
-router.put("/updatedetails/:id",basicdetailscontroller.updatedetails)
-router.put("/education/:id",educationcontroller.education)
-router.put("/expereince/:id",experiencecontroller.experience)
-router.put('/address/:id',addresscontroller.address)
+router.post("/updatedetails", basicdetailscontroller.updatedetails)
+router.post("/education", educationcontroller.education)
+router.post("/experience", experiencecontroller.experience)
+router.put('/address/:id', addresscontroller.address)
 
 
-router.post("/addcontent",addcontroller.addcontent)
+router.post("/addcontent", addcontroller.addcontent)
 
 //........frogetpassword....
-router.post("/forgetpassword",logincontroller.forgetpassword)
+router.post("/forgetpassword", logincontroller.forgetpassword)
+// router.get("/otpfills", logincontroller.verifyotp)
 
 //........changedpassword......
-router.post("/changedpassowrd/:id",logincontroller.changepassword)
-router.post("/editprofile/:id",editcontroller.editprofle)
+router.post("/changedpassowrd/:id", logincontroller.changepassword)
+router.post("/editprofile/:id", editcontroller.editprofle)
 
 
-router.get("/getprofile/:id",getprofile.getprofle)
+router.get("/getprofile/:id", getprofile.getprofle)
 
 module.exports = router;
