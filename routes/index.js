@@ -42,5 +42,6 @@ router.post("/editprofile/:id", editcontroller.editprofle)
 
 
 router.get("/getprofile/:id", getprofile.getprofle)
+router.post("/rolelistening",signupcontroller.rolelistening)
 
 module.exports = router;

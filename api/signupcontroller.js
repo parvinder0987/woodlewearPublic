@@ -11,7 +11,7 @@ module.exports = {
     const saltRounds = 10;
 
     try {
-      // Input validation
+
       const v = new Validator(req.body, {
         Name: "required",
         yourEmail: "required|email",
@@ -58,7 +58,7 @@ module.exports = {
       const secretKey = "your-secret-key";
       const userId = newUser._id;
       const token = jwt.sign({ userId }, secretKey, { expiresIn: "1h" });
-      
+
       await newUser.save()
       return res.status(200).send({ data: newUser.dataValues, token: token, message: "usercreate succesfully" })
     } catch (error) {
@@ -98,6 +98,26 @@ module.exports = {
     } catch (error) {
       console.error("Failed to verify OTP:", error);
       res.status(500).json({ error: "Internal server error" });
+    }
+  },
+  rolelistening: async (req, res) => {
+    const userRole = req.body.role;
+    try {
+      
+
+        const user = await User.findAll({where :{ role: userRole }})
+
+        if (user) {
+          res.status(200).json({ success: true, user })
+        } else {
+          res.status(406).json({ success: false, message: "No users are available for this role." });
+        }
+      
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+
     }
   }
 

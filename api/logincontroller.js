@@ -131,5 +131,13 @@ module.exports = {
         res.status(500).send("internal error")
       }
     }
+    // logout:async(req,res)=>{
+    //   try {
+
+        
+    //   } catch (error) {
+    //     console.log("server is not responding", error)
+    //   }
+    // }
     
   }
