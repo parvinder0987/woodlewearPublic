@@ -9,6 +9,7 @@ const addresscontroller = require('../api/addresscontroller');
 const addcontroller = require('../api/addcontroller');
 const editcontroller = require('../api/editcontroller');
 const getprofile = require('../api/getprofile');
+const deletecontroller = require('../api/deletecontroller');
 var router = express.Router();
 
 
@@ -43,5 +44,7 @@ router.post("/editprofile/:id", editcontroller.editprofle)
 
 router.get("/getprofile/:id", getprofile.getprofle)
 router.post("/rolelistening",signupcontroller.rolelistening)
+
+router.delete("/delete",deletecontroller.deleteuser)
 
 module.exports = router;

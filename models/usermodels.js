@@ -23,7 +23,7 @@ const user = sequelize.define("user", {
   },
 
   role: {
-    type: DataTypes.TINYINT,
+    type: DataTypes.INTEGER,
     allowNull: true,
   },
 

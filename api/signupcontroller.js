@@ -44,6 +44,7 @@ module.exports = {
         return res.status(400).send({ message: "user already exist." })
       }
       // Create a new user
+      console.log('body =============>', req.body);
       const newUser = await User.create({
         Name: req.body.Name,
         yourEmail: req.body.yourEmail,
@@ -103,16 +104,16 @@ module.exports = {
   rolelistening: async (req, res) => {
     const userRole = req.body.role;
     try {
-      
 
-        const user = await User.findAll({where :{ role: userRole }})
 
-        if (user) {
-          res.status(200).json({ success: true, user })
-        } else {
-          res.status(406).json({ success: false, message: "No users are available for this role." });
-        }
-      
+      const user = await User.findAll({ where: { role: userRole } })
+
+      if (user) {
+        res.status(200).json({ success: true, user })
+      } else {
+        res.status(406).json({ success: false, message: "No users are available for this role." });
+      }
+
 
     } catch (error) {
       console.error(error);
