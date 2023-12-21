@@ -10,6 +10,7 @@ const addcontroller = require('../api/addcontroller');
 const editcontroller = require('../api/editcontroller');
 const getprofile = require('../api/getprofile');
 const deletecontroller = require('../api/deletecontroller');
+const viewpage = require('../api/viewpage');
 var router = express.Router();
 
 
@@ -43,8 +44,10 @@ router.post("/editprofile/:id", editcontroller.editprofle)
 
 
 router.get("/getprofile/:id", getprofile.getprofle)
-router.post("/rolelistening",signupcontroller.rolelistening)
+router.post("/rolelistening", signupcontroller.rolelistening)
 
-router.delete("/delete",deletecontroller.deleteuser)
+router.delete("/delete", deletecontroller.deleteuser)
+
+router.post("/viewdata", viewpage.viewpage)
 
 module.exports = router;
