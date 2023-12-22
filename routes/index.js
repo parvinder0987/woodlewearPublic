@@ -11,13 +11,14 @@ const editcontroller = require('../api/editcontroller');
 const getprofile = require('../api/getprofile');
 const deletecontroller = require('../api/deletecontroller');
 const viewpage = require('../api/viewpage');
+const { authenticateJWT } = require('../middlewear/auth');
 var router = express.Router();
 
 
 router.post("/signup", signupcontroller.create)
 router.post("/verifyotp", signupcontroller.verifyotp);
 
-router.post('/login', logincontroller.login1)
+router.post('/login',logincontroller.login1)
 
 //..............category.................//
 
@@ -39,11 +40,11 @@ router.post("/forgetpassword", logincontroller.forgetpassword)
 // router.get("/otpfills", logincontroller.verifyotp)
 
 //........changedpassword......
-router.post("/changedpassowrd/:id", logincontroller.changepassword)
+router.post("/changedpassowrd",authenticateJWT, logincontroller.changepassword)
 router.post("/editprofile/:id", editcontroller.editprofle)
 
 
-router.get("/getprofile/:id", getprofile.getprofle)
+router.get("/getprofile",authenticateJWT, getprofile.getprofle)
 router.post("/rolelistening", signupcontroller.rolelistening)
 
 router.delete("/delete", deletecontroller.deleteuser)

@@ -4,6 +4,7 @@ const { Validator } = require("node-input-validator");
 const User = require("../models/usermodels");
 const helper = require("../middlewear/helper");
 const Emailsend = require("../middlewear/sendmail")
+const auth = require("../middlewear/auth")
 
 module.exports = {
   login1: async (req, res) => {
@@ -29,7 +30,7 @@ module.exports = {
         return res.status(401).json({ error: 'Invalid email or password.' });
       }
 
-      const isPasswordValid = await bcrypt.compareSync(password, isUserExist.password);
+      const isPasswordValid = await bcrypt.compare(password, isUserExist.password);
 
       if (!isPasswordValid) {
         return res.status(401).json({ error: 'Invalid email or password.' });
@@ -86,58 +87,51 @@ module.exports = {
     try {
       const { oldpassword, newpassword, confirmpassword } = req.body;
 
-      const userId = req.params.id
       const v = new Validator(req.body, {
-        oldpassword: "required",
-        newpassword: "required|minLength:6|maxLength:6",
-        confirmpassword: "required|minLength:6|maxLength:6"
-      })
+        oldpassword: 'required',
+        newpassword: 'required|min:6',
+        confirmpassword: 'required|min:6',
+      });
 
       if (newpassword !== confirmpassword) {
-        return helper.failed(res, "confirmpassword not match")
+        return helper.failed(res, 'confirmpassword does not match');
       }
+
       let errorsResponse = await helper.checkValidation(v);
 
-
       if (errorsResponse) {
-        return helper.failed(res.errorsResponse)
+        return helper.failed(res, errorsResponse);
       }
-      const isuserok = await User.findOne({
-        where: { id: userId }
+
+      const isuserok = await User.findByPk(req.user.id);
+      if (!isuserok) {
+        return res.status(400).json({ error: 'User not found' });
+      }
+
+      const isoldpassword = await bcrypt.compare(oldpassword, isuserok.password);
+      console.log("oldpassword", oldpassword);
+
+      if (!isoldpassword) {
+        return helper.failed(res, 'Old password is incorrect');
+      }
+
+      const hashedNewPassword = await bcrypt.hash(newpassword, 10);
+      let update = await User.update({
+        password: hashedNewPassword
+      }, {
+        where: {
+          id: isuserok.id
+        }
       })
 
-      if (!isuserok) {
-        return res.status(400).json({ error: "user not find" })
-      }
+      console.log(update, '-=-=--=updae')
 
-      console.log("oldPassword ===========================> ", oldpassword);
-      console.log("isokpass ===========================> ", isuserok.password);
-
-
-      const isoldpassword = await bcrypt.compareSync(oldpassword, isuserok.password)
-
-      if (isoldpassword) {
-        const hashedNewPassword = await bcrypt.hash(newpassword, 10)
-
-        isuserok.password = hashedNewPassword;
-        await isuserok.save();
-
-        res.json({ message: "password changed succesfully" })
-      }
-
-
+      return res.json({ success: true, message: 'Password changed successfully' });
     } catch (error) {
       console.log(error);
-      res.status(500).send("internal error")
+      console.log(error)
+      res.status(500).send(error.message);
     }
   }
-  // logout:async(req,res)=>{
-  //   try {
-
-
-  //   } catch (error) {
-  //     console.log("server is not responding", error)
-  //   }
-  // }
 
 }
