@@ -7,7 +7,7 @@ module.exports = {
     getprofle: async (req, res) => {
         try {
             //  const userId = req.params.id
-
+             console.log('user details =========>' , req.user);
             const user = await User.findByPk(req.user.id)
 
             if (!user) {

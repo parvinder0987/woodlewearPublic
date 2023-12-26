@@ -1,5 +1,7 @@
 const mv = require('mv');
-
+const User = require("../models/usermodels")
+const secretKey = "testingEncryption123@";
+const jwt = require("jsonwebtoken");
 module.exports = {
   userId: () => {
     return "65097965bb8ecec67f5959f5";
@@ -69,33 +71,37 @@ module.exports = {
 
     return `/images/${folder}/${resultExt}`;
   },
- 
-    authenticateJWT: async (req, res, next) => {
-      const authHeader = req.headers.authorization;
 
-      if (authHeader) {
-        const token = authHeader.split(" ")[1];
+  authenticateJWT: async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+      const token = authHeader.split(" ")[1];
+      jwt.verify(token, secretKey, async (err, user) => {
+        if (err) {
+          console.log(err)
+          res.json('token expirrd')
+          return res.sendStatus(403);
+        }
 
-        jwt.verify(token, secretKey, async (err, user) => {
-          
-          if (err) {
-            return res.sendStatus(403);
-          }
-
-          let userInfo = await User.findOne({
-            _id: user.userId,
-          });
-          if (userInfo) {
-            userInfo = JSON.parse(JSON.stringify(userInfo));
-            req.user = userInfo;
-            console.log(req.user);
-            next();
-          } else {
-          
+        if (!user || !user.id) {
+          return res.status(400).send("User ID not found in token");
+        }
+        let userInfo = await User.findOne({
+          where: {
+            id: user.id,
           }
         });
-      } else {
-        res.sendStatus(401);  
-      }
+        if (userInfo) {
+          userInfo = JSON.parse(JSON.stringify(userInfo));
+          req.user = userInfo;
+          console.log(req.user);
+          next();
+        } else {
+
+        }
+      });
+    } else {
+      res.sendStatus(401);
     }
-};
+  }
+}

@@ -4,14 +4,15 @@ const bcrypt = require("bcrypt");
 const { Validator } = require("node-input-validator");
 const helper = require("../middlewear/helper");
 const Emailsend = require("../middlewear/sendmail");
-const db = require('../db/dbConfig')
+// const auth = require("../middlewear/auth")
+const db = require('../db/dbConfig');
+// const { where } = require("sequelize");
 
 module.exports = {
   create: async (req, res) => {
     const saltRounds = 10;
 
     try {
-
       const v = new Validator(req.body, {
         Name: "required",
         yourEmail: "required|email",
@@ -31,10 +32,7 @@ module.exports = {
       const otp = Math.floor(1000 + Math.random() * 9000);
       const ownerEmail = req.body.yourEmail;
 
-
-      // Hash password
       req.body.password = await bcrypt.hash(req.body.password, saltRounds);
-      //.......email//////
       const find_data = await User.findOne({
         where: {
           yourEmail: req.body.yourEmail,
@@ -43,7 +41,6 @@ module.exports = {
       if (find_data) {
         return res.status(400).send({ message: "user already exist." })
       }
-      // Create a new user
       console.log('body =============>', req.body);
       const newUser = await User.create({
         Name: req.body.Name,
@@ -56,9 +53,9 @@ module.exports = {
 
       await Emailsend.sendOTP(ownerEmail, `Your OTP: ${otp}`);
 
-      const secretKey = "your-secret-key";
-      const userId = newUser._id;
-      const token = jwt.sign({ userId }, secretKey, { expiresIn: "1h" });
+      const secretKey = "testingEncryption123@";
+      const userId = newUser.id;
+      const token = jwt.sign({ id: userId }, secretKey, { expiresIn: "1h" });
 
       await newUser.save()
       return res.status(200).send({ data: newUser.dataValues, token: token, message: "usercreate succesfully" })
@@ -99,6 +96,31 @@ module.exports = {
     } catch (error) {
       console.error("Failed to verify OTP:", error);
       res.status(500).json({ error: "Internal server error" });
+    }
+  },
+  resendotp: async (req, res) => {
+    try {
+      const otp = Math.floor(1000 + Math.random() * 9000)
+      let data = await User.findByPk(req.user.id)
+      console.log(req.user)
+      if (!data) {
+        return res.status(401).json({ message: "User not found" });
+      } else {
+        await Emailsend.sendOTP(User.yourEmail, otp)
+      }
+      const update = User.update({
+        OTP: otp
+      }, {
+        where: { id: data.id }
+      })
+      if (update == 0) {
+        return res.status(404).json({ message: "User not found or OTP already up to date" });
+      }
+      return helper.success(res, "OTP resent successfully", data)
+
+    } catch (error) {
+      console.log(error)
+      res.status(400).send("internal error ")
     }
   },
   rolelistening: async (req, res) => {

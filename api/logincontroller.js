@@ -4,7 +4,7 @@ const { Validator } = require("node-input-validator");
 const User = require("../models/usermodels");
 const helper = require("../middlewear/helper");
 const Emailsend = require("../middlewear/sendmail")
-const auth = require("../middlewear/auth")
+// const auth = require("../middlewear/auth")
 
 module.exports = {
   login1: async (req, res) => {
@@ -36,7 +36,7 @@ module.exports = {
         return res.status(401).json({ error: 'Invalid email or password.' });
       }
 
-      const jwtSecretKey = 'your-secret-key';
+      const jwtSecretKey = 'testingEncryption123@';
       const newToken = jwt.sign({ id: isUserExist.id }, jwtSecretKey);
 
       isUserExist.token = newToken;

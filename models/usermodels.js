@@ -32,8 +32,13 @@ const user = sequelize.define("user", {
   },
   is_otp_verify: {
     type: DataTypes.INTEGER,
-  }, Gender: {
-    type: DataTypes.STRING,
+  },
+  status:{
+    type:DataTypes.INTEGER,
+    defaultValue:1
+  },
+  Gender: {
+     type: DataTypes.STRING,
     enum: ["Male", "Female"],
 
   },
