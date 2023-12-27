@@ -132,6 +132,16 @@ module.exports = {
       console.log(error)
       res.status(500).send(error.message);
     }
+  },
+  resetpassword:async(req,res)=>{
+    try {
+      const userID  =req.user.id
+      const datatype = await  User.update()
+      
+    } catch (error) {
+      console.log("error===",error)
+      return res.status(400).send("internal error")
+    }
   }
 
 }

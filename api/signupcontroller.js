@@ -41,7 +41,7 @@ module.exports = {
       if (find_data) {
         return res.status(400).send({ message: "user already exist." })
       }
-      console.log('body =============>', req.body);
+      // console.log('body =============>', req.body);
       const newUser = await User.create({
         Name: req.body.Name,
         yourEmail: req.body.yourEmail,
@@ -69,7 +69,7 @@ module.exports = {
     try {
       const userId = req.body.id;
       const finddata = await User.findOne({ where: { id: userId }, raw: true });
-      console.log('data ==========>', finddata);
+      // console.log('data ==========>', finddata);
       if (!finddata) {
         return helper.failed(res, "User not found");
       }
@@ -120,7 +120,7 @@ module.exports = {
 
     } catch (error) {
       console.log(error)
-      res.status(400).send("internal error ")
+      res.status(400).send("internal error")
     }
   },
   rolelistening: async (req, res) => {
