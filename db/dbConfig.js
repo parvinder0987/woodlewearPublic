@@ -5,7 +5,7 @@ const sequelize = new Sequelize('student', 'dbuser', 'password', {
   host: 'localhost',
   dialect: 'mysql',
 });
-
+ 
 
 
 const db = {};
