@@ -5,7 +5,7 @@ const { Validator } = require("node-input-validator");
 const helper = require("../middlewear/helper");
 const Emailsend = require("../middlewear/sendmail");
 // const auth = require("../middlewear/auth")
-const db = require('../db/dbConfig');
+const db = require("../db/dbConfig");
 // const { where } = require("sequelize");
 
 module.exports = {
@@ -39,7 +39,7 @@ module.exports = {
         },
       });
       if (find_data) {
-        return res.status(400).send({ message: "user already exist." })
+        return res.status(400).send({ message: "user already exist." });
       }
       // console.log('body =============>', req.body);
       const newUser = await User.create({
@@ -48,17 +48,22 @@ module.exports = {
         phoneNumber: req.body.phoneNumber,
         password: req.body.password,
         role: req.body.role,
-        OTP: otp
+        OTP: otp,
       });
 
       await Emailsend.sendOTP(ownerEmail, `Your OTP: ${otp}`);
 
       const secretKey = "testingEncryption123@";
       const userId = newUser.id;
-      const token = jwt.sign({ id: userId }, secretKey, { expiresIn: "1h" });
+      const token = jwt.sign({ id: userId }, secretKey);
 
-      await newUser.save()
-      return res.status(200).send({ data: newUser.dataValues, token: token, message: "usercreate succesfully" })
+      newUser.token = token;
+      await newUser.save();
+      return res.status(200).send({
+        data: newUser.dataValues,
+        token: token,
+        message: "User created successfully",
+      });
     } catch (error) {
       console.error("Error:", error);
       res.status(500).send("Internal server error");
@@ -100,48 +105,53 @@ module.exports = {
   },
   resendotp: async (req, res) => {
     try {
-      const otp = Math.floor(1000 + Math.random() * 9000)
-      let data = await User.findByPk(req.user.id)
-      console.log(req.user)
+      const otp = Math.floor(1000 + Math.random() * 9000);
+      let data = await User.findByPk(req.user.id);
+      console.log(req.user);
       if (!data) {
         return res.status(401).json({ message: "User not found" });
       } else {
-        await Emailsend.sendOTP(User.yourEmail, otp)
+        await Emailsend.sendOTP(User.yourEmail, otp);
       }
-      const update = User.update({
-        OTP: otp
-      }, {
-        where: { id: data.id }
-      })
+      const update = User.update(
+        {
+          OTP: otp,
+        },
+        {
+          where: { id: data.id },
+        }
+      );
       if (update == 0) {
-        return res.status(404).json({ message: "User not found or OTP already up to date" });
+        return res
+          .status(404)
+          .json({ message: "User not found or OTP already up to date" });
       }
-      return helper.success(res, "OTP resent successfully", data)
-
+      return helper.success(res, "OTP resent successfully", data);
     } catch (error) {
-      console.log(error)
-      res.status(400).send("internal error")
+      console.log(error);
+      res.status(400).send("internal error");
     }
   },
   rolelistening: async (req, res) => {
     const userRole = req.body.role;
     try {
-
-
-      const user = await User.findAll({ where: { role: userRole } })
+      const user = await User.findAll({ where: { role: userRole } });
 
       if (user) {
-        res.status(200).json({ success: true, user })
+        res.status(200).json({ success: true, user });
       } else {
-        res.status(406).json({ success: false, message: "No users are available for this role." });
+        res
+          .status(406)
+          .json({
+            success: false,
+            message: "No users are available for this role.",
+          });
       }
-
-
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, message: 'Internal server error' });
-
+      res
+        .status(500)
+        .json({ success: false, message: "Internal server error" });
     }
-  }
-
+  },
 };

@@ -25,6 +25,7 @@
     "node-input-validator": "^4.5.1",
     "nodemailer": "^6.9.7",
     "nodemon": "^3.0.1",
-    "sequelize": "^6.34.0"
+    "sequelize": "^6.34.0",
+    "stripe": "^14.10.0"
   }
 }

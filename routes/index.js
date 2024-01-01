@@ -14,6 +14,7 @@ const viewpage = require('../api/viewpage');
 // const { authenticateJWT } = require('../middlewear/auth');
 const { resendotp } = require('../middlewear/sendmail');
 const { authenticateJWT } = require('../middlewear/helper');
+const customer = require('../api/payemnt/customer');
 var router = express.Router();
 
 
@@ -32,7 +33,7 @@ router.post('/subcategoryadd', categorycontroller.addSubcategory)
 // router.post("/BasicDetails",basicdetailscontroller.details)
 router.post("/updatedetails", basicdetailscontroller.updatedetails)
 router.post("/education", educationcontroller.education)
-router.post("/experience", experiencecontroller.experience)
+router.post("/experience",authenticateJWT, experiencecontroller.experience)
 router.put('/address/:id', addresscontroller.address)
 
 
@@ -54,5 +55,8 @@ router.delete("/delete", deletecontroller.deleteuser)
 
 router.post("/viewdata", viewpage.viewpage)
 router.put("/statuschange", authenticateJWT, viewpage.statuschange)
+
+
+router.post("/customerdetails",customer.cutomer)
 
 module.exports = router;

@@ -12,40 +12,42 @@ module.exports = {
       const { yourEmail, password } = req.body;
 
       const v = new Validator(req.body, {
-        yourEmail: 'required|email',
-        password: 'required',
+        yourEmail: "required|email",
+        password: "required",
       });
 
       let errorsResponse = await helper.checkValidation(v);
-
       if (errorsResponse) {
         return helper.failed(res, { message: errorsResponse["YourEmail"] });
       }
 
-      const isUserExist = await User.findOne({
-        where: { yourEmail },
-      });
-
+      const isUserExist = await User.findOne({ where: { yourEmail } });
       if (!isUserExist) {
-        return res.status(401).json({ error: 'Invalid email or password.' });
+        return res.status(401).json({ error: "Invalid email." });
       }
 
-      const isPasswordValid = await bcrypt.compare(password, isUserExist.password);
-
+      const isPasswordValid = await bcrypt.compare(
+        password,
+        isUserExist.password
+      );
       if (!isPasswordValid) {
-        return res.status(401).json({ error: 'Invalid email or password.' });
+        return res
+          .status(401)
+          .json({ error: "Please enter the correct password." });
       }
 
-      const jwtSecretKey = 'testingEncryption123@';
+      const jwtSecretKey = "testingEncryption123@";
       const newToken = jwt.sign({ id: isUserExist.id }, jwtSecretKey);
-
       isUserExist.token = newToken;
       await isUserExist.save();
 
-      res.json({ ...isUserExist?.dataValues, token: newToken });
+  
+      const userData = { ...isUserExist.dataValues };
+      delete userData.password; 
+      res.json({ ...userData, token: newToken });
     } catch (error) {
       console.error(error);
-      res.status(500).send('Internal server error');
+      res.status(500).send("Internal server error");
     }
   },
 
@@ -54,7 +56,7 @@ module.exports = {
       const { yourEmail } = req.body;
 
       const v = new Validator(req.body, {
-        yourEmail: 'required|email',
+        yourEmail: "required|email",
       });
 
       let errorsResponse = await helper.checkValidation(v);
@@ -62,7 +64,6 @@ module.exports = {
       if (errorsResponse) {
         return helper.failed(res, { message: errorsResponse["YourEmail"] });
       }
-
 
       const otp = Math.floor(1000 + Math.random() * 9000);
       const ownerEmail = req.body.yourEmail;
@@ -72,15 +73,15 @@ module.exports = {
       });
 
       if (!user) {
-        return res.status(404).json({ error: 'User not found.' });
+        return res.status(404).json({ error: "User not found." });
       }
 
       await Emailsend.sendOTP(ownerEmail, `Your OTP: ${otp}`);
 
-      res.json({ message: 'OTP sent successfully. Check your email.' });
+      res.json({ message: "OTP sent successfully. Check your email." });
     } catch (error) {
       console.error(error);
-      res.status(500).send('Internal server error');
+      res.status(500).send("Internal server error");
     }
   },
   changepassword: async (req, res) => {
@@ -88,13 +89,13 @@ module.exports = {
       const { oldpassword, newpassword, confirmpassword } = req.body;
 
       const v = new Validator(req.body, {
-        oldpassword: 'required',
-        newpassword: 'required|min:6',
-        confirmpassword: 'required|min:6',
+        oldpassword: "required",
+        newpassword: "required|min:6",
+        confirmpassword: "required|min:6",
       });
 
       if (newpassword !== confirmpassword) {
-        return helper.failed(res, 'confirmpassword does not match');
+        return helper.failed(res, "confirmpassword does not match");
       }
 
       let errorsResponse = await helper.checkValidation(v);
@@ -105,43 +106,50 @@ module.exports = {
 
       const isuserok = await User.findByPk(req.user.id);
       if (!isuserok) {
-        return res.status(400).json({ error: 'User not found' });
+        return res.status(400).json({ error: "User not found" });
       }
 
-      const isoldpassword = await bcrypt.compare(oldpassword, isuserok.password);
+      const isoldpassword = await bcrypt.compare(
+        oldpassword,
+        isuserok.password
+      );
       console.log("oldpassword", oldpassword);
 
       if (!isoldpassword) {
-        return helper.failed(res, 'Old password is incorrect');
+        return helper.failed(res, "Old password is incorrect");
       }
 
       const hashedNewPassword = await bcrypt.hash(newpassword, 10);
-      let update = await User.update({
-        password: hashedNewPassword
-      }, {
-        where: {
-          id: isuserok.id
+      let update = await User.update(
+        {
+          password: hashedNewPassword,
+        },
+        {
+          where: {
+            id: isuserok.id,
+          },
         }
-      })
+      );
 
-      console.log(update, '-=-=--=updae')
+      console.log(update, "-=-=--=updae");
 
-      return res.json({ success: true, message: 'Password changed successfully' });
+      return res.json({
+        success: true,
+        message: "Password changed successfully",
+      });
     } catch (error) {
       console.log(error);
-      console.log(error)
+      console.log(error);
       res.status(500).send(error.message);
     }
   },
-  resetpassword:async(req,res)=>{
+  resetpassword: async (req, res) => {
     try {
-      const userID  =req.user.id
-      const datatype = await  User.update()
-      
+      const userID = req.user.id;
+      const datatype = await User.update();
     } catch (error) {
-      console.log("error===",error)
-      return res.status(400).send("internal error")
+      console.log("error===", error);
+      return res.status(400).send("internal error");
     }
-  }
-
-}
+  },
+};

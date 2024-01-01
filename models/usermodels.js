@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize');
+const { DataTypes } = require("sequelize");
 const sequelize = require("../db/dbConfig");
 
 const user = sequelize.define("user", {
@@ -10,37 +10,34 @@ const user = sequelize.define("user", {
     type: DataTypes.STRING,
     allowNull: false,
     unique: false,
-
   },
   phoneNumber: {
     type: DataTypes.STRING,
-
   },
   password: {
     type: DataTypes.STRING,
     allowNull: true,
-
   },
-
   role: {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
-
   OTP: {
     type: DataTypes.STRING,
   },
   is_otp_verify: {
     type: DataTypes.INTEGER,
   },
-  status:{
-    type:DataTypes.INTEGER,
-    defaultValue:1
+  token: {
+    type: DataTypes.STRING,
+  },
+  status: {
+    type: DataTypes.INTEGER,
+    defaultValue: 1,
   },
   Gender: {
-     type: DataTypes.STRING,
-    enum: ["Male", "Female"],
-
+    type: DataTypes.STRING,
+    enum: ["Male", "Female","prefer not to say "],
   },
   DOB: {
     type: DataTypes.DATEONLY,
@@ -48,7 +45,8 @@ const user = sequelize.define("user", {
   },
   about: {
     type: DataTypes.TEXT,
-  }, image: {
+  },
+  image: {
     type: DataTypes.STRING,
   },
   education: {
@@ -60,7 +58,7 @@ const user = sequelize.define("user", {
   employeType: {
     type: DataTypes.INTEGER,
     enum: [1, 2], // 1 = full time , 2 = part time
-    defaultValue: 1
+    defaultValue: 1,
   },
   document: {
     type: DataTypes.STRING,
@@ -97,11 +95,6 @@ const user = sequelize.define("user", {
   //     type:DataTypes.STRING,
   //   },
   // ],
-
-
-
-
-
 });
 
 user.sync();
