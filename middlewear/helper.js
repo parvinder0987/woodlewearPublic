@@ -82,7 +82,7 @@ module.exports = {
           res.json('token expirrd')
           return res.sendStatus(403);
         }
-
+        console.log('user ====================>' , user);
         if (!user || !user.id) {
           return res.status(400).send("User ID not found in token");
         }
@@ -91,13 +91,14 @@ module.exports = {
             id: user.id,
           }
         });
+        // console.log("user infor =================>", userInfo);
         if (userInfo) {
           userInfo = JSON.parse(JSON.stringify(userInfo));
           req.user = userInfo;
           console.log(req.user);
           next();
         } else {
-
+         return res.status(401).send("Unautorized");
         }
       });
     } else {

@@ -19,6 +19,7 @@ module.exports = {
     statuschange: async (req, res) => {
         try {
             const { status } = req.body;
+            console.log('status =================.' , status)
             if (status === undefined) {
                 return res.status(400).send("Invalid data");
             }
